@@ -13,7 +13,7 @@ let y = 10;
 let foobar = 838383;
 `
 	l := lexer.New(input)
-	p := New(1)
+	p := New(l)
 	
 	program := p.ParseProgram()
 	if program == nil {
@@ -33,13 +33,13 @@ let foobar = 838383;
 
 	for i, tt := range tests {
 		stmt := program.Statements[i]
-		if !TestLetStatement(t, stmt, tt.expectedIdentifier) {
+		if !testLetStatement(t, stmt, tt.expectedIdentifier) {
 			return
 		}
 	}
 }
 
-func TestLetStatement(t *testing.T, s ast.Statement, name string) bool {
+func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
 		return false
@@ -57,9 +57,11 @@ func TestLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	}
 
 	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("letStmt.Name.TokenLiteral() not '%s'. got=%s, name, letStmt.Name.TokenLiteral())
-		return true
+		t.Errorf("letStmt.Name.TokenLiteral() not '%s'. got=%s", name, letStmt.Name.TokenLiteral())
+		return false
 	}
+
+	return true
 }
 
 
