@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"monkey/token"
+	"github.com/Shibachan1015/monkey/token"
 )
 
 func TestNextToken(t *testing.T) {
@@ -139,6 +139,6 @@ if (5 < 10) {
 	}
 
 
-	
+
 }
 */

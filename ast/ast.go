@@ -1,6 +1,6 @@
 package ast
 
-import "monkey/token"
+import "github.com/Shibachan1015/monkey/token"
 
 type Node interface {
 	TokenLiteral() string
@@ -15,12 +15,13 @@ type Expression interface {
 	Node
 	expressionNode()
 }
+
 // すべてのASTのルートノードになる。ここにすべての文が格納される。
 type Program struct {
 	Statements []Statement //Statementインターフェイスを実装するASTノードのスライス
 }
 
-func(p *Program) TokenLiteral() string {
+func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenLiteral()
 	} else {
@@ -45,6 +46,10 @@ type Identifier struct {
 func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 
+type ReturnStatement struct {
+	Token       token.Token // 'return'トークン
+	ReturnValue Expression
+}
 
-
-
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }

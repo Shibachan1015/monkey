@@ -1,6 +1,6 @@
 package lexer
 
-import "monkey/token"
+import "github.com/Shibachan1015/monkey/token"
 
 type Lexer struct {
 	input        string
@@ -9,26 +9,28 @@ type Lexer struct {
 	ch           byte //現在検査中の文字
 }
 
-func New(input string) *Lexer {  //New関数
+func New(input string) *Lexer { //New関数　組み込み関数
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }
-// p32
-func (l *Lexer) readChar() {    //メソッド
+
+//メソッド　Lexer　struct　の型付けられたreadChar関数　文字を読み込んでいく
+func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
-		l.ch = 0                        // 入力の終端に到達したらl.chを０にする。“この値はASCIIコードの"NUL"文字に対応していて、私たちは「まだ何も読み込んでいない」あるいは「ファイルの終わり」を表すために使う。　
+		l.ch = 0 // 入力の終端に到達したらl.chを０にする。“この値はASCIIコードの"NUL"文字に対応していて、「まだ何も読み込んでいない」あるいは「ファイルの終わり」を表すために使う。
 	} else {
-		l.ch = l.input[l.readPosition]  // l.readPositionは常に次に読もうとしている場所を指す
+		l.ch = l.input[l.readPosition] // l.readPositionは常に次に読もうとしている場所を指す
 	}
-	l.position = l.readPosition  // l.positionは常に最後に読んだ場所を指す
+	l.position = l.readPosition // l.positionは常に最後に読んだ場所を指す
 	l.readPosition += 1
 }
-// p33
-func (l *Lexer) NextToken() token.Token { // token.Token型のメソッド？
-	var tok token.Token  // 変数 tok をtoken.Token型で宣言i
 
-	l.skipWhitespace()
+//メソッド
+func (l *Lexer) NextToken() token.Token { // token.Token型を返す
+	var tok token.Token // 変数 tok をtoken.Token型で宣言
+
+	l.skipWhitespace() //空白を読み飛ばす関数
 
 	switch l.ch {
 	case '=':
@@ -49,7 +51,7 @@ func (l *Lexer) NextToken() token.Token { // token.Token型のメソッド？
 			ch := l.ch
 			l.readChar()
 			literal := string(ch) + string(l.ch)
-			tok = token .Token{Type: token.NOT_EQ, Literal: literal}
+			tok = token.Token{Type: token.NOT_EQ, Literal: literal}
 		} else {
 			tok = newToken(token.BANG, l.ch)
 		}
@@ -74,9 +76,10 @@ func (l *Lexer) NextToken() token.Token { // token.Token型のメソッド？
 	case ')':
 		tok = newToken(token.RPAREN, l.ch)
 	case 0:
-		tok.Literal = ""       //空文字を挿入　token.goのstructのフィールドから
+		//空文字を挿入　token.goのstructのフィールドから
+		tok.Literal = ""
 		tok.Type = token.EOF
-	// p38 l.chが認識された文字ではないときに識別子かどうかを点検できるようにdefault分岐をswitch分に追加
+	// p38 l.chが認識された文字ではないときに識別子かどうかを点検できるようにdefault分岐をswitch文に追加
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
@@ -87,7 +90,7 @@ func (l *Lexer) NextToken() token.Token { // token.Token型のメソッド？
 			tok.Literal = l.readNumber()
 			return tok
 		} else {
-			tok = newToken(token.ILLEGAL,l.ch)
+			tok = newToken(token.ILLEGAL, l.ch)
 		}
 	}
 
@@ -95,7 +98,8 @@ func (l *Lexer) NextToken() token.Token { // token.Token型のメソッド？
 	return tok
 }
 
-func (l *Lexer) skipWhitespace(){
+//空白文字を読み飛ばす関数
+func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
@@ -111,7 +115,7 @@ func (l *Lexer) peekChar() byte {
 
 func (l *Lexer) readIdentifier() string {
 	position := l.position
-	for isLetter (l.ch) {
+	for isLetter(l.ch) {
 		l.readChar()
 	}
 	return l.input[position:l.position]
